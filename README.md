@@ -174,3 +174,7 @@ Ausbiz Consulting Pty Ltd provides licenses for non-commercial use only.
 ### Copyright
 
 © Ausbiz Consulting. All rights reserved.
+
+"scripts": {
+  "db:generate": "drizzle-kit generate:sqlite"
+}

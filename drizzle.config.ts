@@ -10,19 +10,16 @@ console.log("Loading database configuration...")
  */
 function parseDatabaseUrl(url: string) {
   try {
-    // Format: postgres://user:password@host:port/database
-    const regex = /postgres:\/\/([^:]+):([^@]+)@([^:]+):?(\d*)\/([^?]+)(\?.*)?/;
-    const match = url.match(regex);
-    
-    if (!match) {
-      throw new Error("Invalid PostgreSQL connection string format");
-    }
-    
-    const [, user, password, host, , database, queryString] = match;
-    
-    // Check if SSL is required from query string
-    const sslRequired = queryString?.includes("sslmode=require");
-    
+    // Use the WHATWG URL parser which handles percent-encoding and query params.
+    // Examples supported: postgres://user:pass@host:5432/dbname?sslmode=require
+    const parsed = new URL(url);
+    const user = decodeURIComponent(parsed.username || "");
+    const password = decodeURIComponent(parsed.password || "");
+    const host = parsed.hostname;
+    const database = parsed.pathname ? parsed.pathname.replace(/^\//, "") : "";
+    const sslMode = parsed.searchParams.get("sslmode") || parsed.searchParams.get("ssl");
+    const sslRequired = sslMode === "require";
+
     return {
       host,
       user,
